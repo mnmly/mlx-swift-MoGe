@@ -1,0 +1,47 @@
+MIT License
+
+Copyright (c) 2026 mnmly
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+Third-party notices
+===================
+
+This project is a Swift port of mlx-MoGe (https://github.com/mnmly/mlx-MoGe),
+a Python MLX port of MoGe (https://github.com/microsoft/MoGe). Both upstream
+projects are MIT licensed:
+
+    MIT License
+    Copyright (c) Microsoft Corporation.
+
+    MIT License
+    Copyright (c) 2026 mnmly
+
+The DINOv2 backbone whose weights are consumed by this model is released
+under the Apache License 2.0 by Meta Platforms, Inc.
+(https://github.com/facebookresearch/dinov2)
+
+Runtime dependencies:
+
+- mlx-swift (https://github.com/ml-explore/mlx-swift) — MIT License,
+  Copyright (c) 2023-2024 Apple Inc.
+- swift-numerics (https://github.com/apple/swift-numerics) — Apache License 2.0,
+  Copyright (c) 2020 Apple Inc.
