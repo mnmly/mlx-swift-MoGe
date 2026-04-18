@@ -393,6 +393,13 @@ public class MoGeModel: Module {
         path: String,
         dtype: DType = .float16
     ) throws -> MoGeModel {
-        return try MoGeWeightLoader.load(path: path, dtype: dtype)
+        return try fromPretrained(url: URL(fileURLWithPath: path), dtype: dtype)
+    }
+
+    public static func fromPretrained(
+        url: URL,
+        dtype: DType = .float16
+    ) throws -> MoGeModel {
+        return try MoGeWeightLoader.load(path: url.path, dtype: dtype)
     }
 }

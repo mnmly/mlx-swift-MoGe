@@ -55,8 +55,20 @@ public func bilinearResize(_ x: MLXArray, _ targetH: Int, _ targetW: Int) -> MLX
     let W = x.dim(2)
     if H == targetH && W == targetW { return x }
 
-    let sh = Float(targetH) / Float(H)
-    let sw = Float(targetW) / Float(W)
+    // MLX's `Upsample` computes the output size as `Int(scale * Float(N))`,
+    // which truncates. A scale derived from a Float division can land a hair
+    // below the exact ratio (e.g. 700/556 makes 556 × scale ≈ 699.9999 → 699),
+    // dropping one row/column and mis-shaping the ViT token grid downstream.
+    // `nextUp` nudges the scale past the rounding boundary.
+    let sh = (Float(targetH) / Float(H)).nextUp
+    let sw = (Float(targetW) / Float(W)).nextUp
     let up = Upsample(scaleFactor: .array([sh, sw]), mode: .linear(alignCorners: false))
-    return up(x)
+    var out = up(x)
+    // Defensive: if the adjusted scale over/undershoots by one, crop to target.
+    let outH = out.dim(1)
+    let outW = out.dim(2)
+    if outH != targetH || outW != targetW {
+        out = out[0..., 0..<targetH, 0..<targetW, 0...]
+    }
+    return out
 }

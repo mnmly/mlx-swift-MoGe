@@ -73,7 +73,7 @@ func runExample(imagePath: String, weightsPath: String, outputPlyPath: String) t
     print("Loading image from \(imagePath)")
 
     let (image, _, _) = loadImageAsNHWC(path: imagePath)
-    
+    print(image.shape)
     print("Running inference...")
 
     // Run full inference. Keep applyMask on so invalid pixels are marked +inf,
