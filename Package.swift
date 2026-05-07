@@ -11,9 +11,11 @@ let package = Package(
             name: "MLXMoGe",
             targets: ["MLXMoGe"]
         ),
+        .executable(name: "moge-bench", targets: ["moge-bench"]),
     ],
     dependencies: [
         .package(url: "https://github.com/ml-explore/mlx-swift", from: "0.17.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.2.0"),
     ],
     targets: [
         .target(
@@ -24,6 +26,14 @@ let package = Package(
                 .product(name: "MLXFast", package: "mlx-swift"),
             ],
             path: "Sources/MLXMoGe"
+        ),
+        .executableTarget(
+            name: "moge-bench",
+            dependencies: [
+                "MLXMoGe",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+            ],
+            path: "Tools/moge-bench"
         ),
         .testTarget(
             name: "MLXMoGeTests",

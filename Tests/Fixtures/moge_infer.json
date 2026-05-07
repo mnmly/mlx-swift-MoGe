@@ -1,0 +1,17 @@
+{
+  "hf_model": "Ruicheng/moge-2-vitl-normal",
+  "device": "mps",
+  "image": "/Users/mnmly/Development-local/GitHub/python/MoGe/example_images/01_HouseIndoor.jpg",
+  "height": 187,
+  "width": 280,
+  "resolution_level": 5,
+  "fp16": true,
+  "keys": [
+    "input_nhwc",
+    "output.depth",
+    "output.intrinsics",
+    "output.mask",
+    "output.normal",
+    "output.points"
+  ]
+}

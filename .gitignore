@@ -1,11 +1,16 @@
 # Xcode / Swift
 .build/
 .swiftpm/
+.xcdd/
 *.xcodeproj/
 xcuserdata/
 *.xcworkspace/
 DerivedData/
 *.playground/playground.xcworkspace
+
+# Profiling / coverage output
+*.profraw
+*.profdata
 
 # macOS
 .DS_Store
