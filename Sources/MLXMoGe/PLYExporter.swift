@@ -83,10 +83,11 @@ public func exportDepthMapToPLY(
     intrinsics: MLXArray,
     height: Int,
     width: Int,
-    binary: Bool = false
+    binary: Bool = false,
+    flipYUp: Bool = false
 ) throws {
     let points = depthMapToPointMap(depth: depth, intrinsics: intrinsics, height: height, width: width)
-    try exportPointCloudToPLY(path: path, points: points, binary: false)
+    try exportPointCloudToPLY(path: path, points: points, binary: binary, flipYUp: flipYUp)
 }
 
 /// Export a point cloud to PLY format.
@@ -95,28 +96,54 @@ public func exportDepthMapToPLY(
 ///   - path: Output file path
 ///   - points: Point cloud array (H, W, 3) or (B, H, W, 3)
 ///   - binary: Whether to write in binary format
-public func exportPointCloudToPLY(
-    path: String,
+/// Convert a point cloud (and optional colors) into `[PLYVertex]` without writing to disk.
+///
+/// - Parameters:
+///   - points: Point cloud array shaped `(H, W, 3)`, `(B, H, W, 3)`, or `(N, 3)`.
+///   - colors: Optional color array with a matching layout, values in `[0, 255]`.
+///   - flipYUp: If true, negates Y and Z to convert MoGe's OpenCV convention
+///     (+Y down, +Z forward) into +Y-up / +Z-back used by Blender/GL viewers.
+public func pointCloudToVertices(
     points: MLXArray,
-    binary: Bool = true
-) throws {
+    colors: MLXArray? = nil,
+    flipYUp: Bool = false
+) -> [PLYVertex] {
     let pointData = points.asType(.float32).asArray(Float.self)
-    
-    var vertices: [PLYVertex] = []
-    let _ = points.ndim == 4 ? points.dim(1) * points.dim(2) * 3 : points.dim(0) * points.dim(1) * 3
+    let colorData = colors?.asType(.float32).asArray(Float.self)
+    if let colorData { precondition(colorData.count == pointData.count, "colors must match points layout") }
+
     let count = pointData.count / 3
-    
+    let sign: Float = flipYUp ? -1 : 1
+    var vertices: [PLYVertex] = []
+    vertices.reserveCapacity(count)
+
     for i in 0..<count {
         let idx = i * 3
+        var color: (UInt8, UInt8, UInt8)? = nil
+        if let colorData {
+            let r = UInt8(min(max(colorData[idx], 0), 255))
+            let g = UInt8(min(max(colorData[idx + 1], 0), 255))
+            let b = UInt8(min(max(colorData[idx + 2], 0), 255))
+            color = (r, g, b)
+        }
         vertices.append(
             PLYVertex(
-                position: (pointData[idx], pointData[idx + 1], pointData[idx + 2]),
+                position: (pointData[idx], sign * pointData[idx + 1], sign * pointData[idx + 2]),
                 normal: nil,
-                color: nil
+                color: color
             )
         )
     }
-    
+    return vertices
+}
+
+public func exportPointCloudToPLY(
+    path: String,
+    points: MLXArray,
+    binary: Bool = true,
+    flipYUp: Bool = false
+) throws {
+    let vertices = pointCloudToVertices(points: points, colors: nil, flipYUp: flipYUp)
     try exportPLY(to: path, vertices: vertices, faces: nil, binary: binary)
 }
 
@@ -131,30 +158,10 @@ public func exportPointCloudWithColorsToPLY(
     path: String,
     points: MLXArray,
     colors: MLXArray,
-    binary: Bool = true
+    binary: Bool = true,
+    flipYUp: Bool = false
 ) throws {
-    let pointData = points.asType(.float32).asArray(Float.self)
-    let colorData = colors.asType(.float32).asArray(Float.self)
-    
-    var vertices: [PLYVertex] = []
-    let count = pointData.count / 3
-    
-    for i in 0..<count {
-        let pIdx = i * 3
-        let cIdx = i * 3
-        
-        let r = UInt8(min(max(colorData[cIdx], 0), 255))
-        let g = UInt8(min(max(colorData[cIdx + 1], 0), 255))
-        let b = UInt8(min(max(colorData[cIdx + 2], 0), 255))
-        
-        vertices.append(
-            PLYVertex(
-                position: (pointData[pIdx], pointData[pIdx + 1], pointData[pIdx + 2]),
-                normal: nil,
-                color: (r, g, b)
-            )
-        )
-    }
+    let vertices = pointCloudToVertices(points: points, colors: colors, flipYUp: flipYUp)
     
     try exportPLY(to: path, vertices: vertices, faces: nil, binary: binary)
 }
