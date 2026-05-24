@@ -1,3 +1,4 @@
+#if os(macOS)
 import AppKit
 import ArgumentParser
 import CoreGraphics
@@ -157,3 +158,12 @@ private func loadImageAsNHWC(path: String) -> (MLXArray, Int, Int)? {
     }
     return (MLXArray(floats, [H, W, 3]), H, W)
 }
+
+#else
+@main
+struct MoGeBench {
+    static func main() {
+        fatalError("moge-bench is only available on macOS")
+    }
+}
+#endif

@@ -4,7 +4,10 @@ import PackageDescription
 let package = Package(
     name: "mlx-swift-moge",
     platforms: [
-        .macOS(.v14)
+        .macOS(.v14),
+        .iOS(.v17),
+        .visionOS(.v1),
+        .tvOS(.v17),
     ],
     products: [
         .library(
